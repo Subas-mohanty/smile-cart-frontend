@@ -12,8 +12,8 @@ const Product = () => {
 
   const fetchProduct = async () => {
     try {
-      const response = await productsApi.show();
-      setProduct(response.data);
+      const product = await productsApi.show();
+      setProduct(product);
     } catch (error) {
       console.log("An error occurec", error);
     } finally {
@@ -21,18 +21,18 @@ const Product = () => {
     }
   };
 
+  // calling the fetchProduct function inside useEffect, so that the API call or the http request is made only once on the first render not on every render, this is why we have an empty dependency array in the useEffect
+
+  // fetchProduct();
+
+  // why calling the function inside useEffect instead of directly calling the function outside ?
+  // we know that every time a state variable changes the component re-render. There may be many state variables inside a component And if we call the function outside, it will be called on every re-render when any of these state variable changes, we will be making unnecessary api calls in this way. But by calling it inside useEffect with an empty dependency array we are making sure that the api call is made only once(on the initial render not on subsequent renders)
+
   useEffect(() => {
     fetchProduct();
   }, []);
 
-  const {
-    name,
-    image_url: imageUrl,
-    image_urls: imageUrls,
-    description,
-    mrp,
-    offer_price: offerPrice,
-  } = product;
+  const { name, imageUrl, imageUrls, description, mrp, offerPrice } = product;
 
   const totalDiscounts = mrp - offerPrice;
   const discountPercentage = ((totalDiscounts / mrp) * 100).toFixed(1);
