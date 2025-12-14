@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import classNames from "classnames";
 import { Left, Right } from "neetoicons";
@@ -6,19 +6,31 @@ import { Button } from "neetoui";
 
 const Carousel = ({ imageUrls, title }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const timerRef = useRef(null);
 
-  const handleNext = () =>
+  const resetTimer = () => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(handleNext, 3000);
+  };
+
+  const handleNext = () => {
     setCurrentIndex(prevIndex => (prevIndex + 1) % imageUrls.length);
+  };
 
-  const handlePrevious = () =>
+  const handlePrevious = () => {
+    // why we don't call the resetTimer function inside handleNext instead of calling it separately on right click ?
+    // The reason is that handleNext is also used in the useEffect for automatic image scrolling. If we call the resetTimer inside handleNext, it will reset the timer every time the timer is executed.
+
+    resetTimer();
     setCurrentIndex(
       prevIndex => (prevIndex - 1 + imageUrls.length) % imageUrls.length
     );
+  };
 
   useEffect(() => {
-    const intervalId = setInterval(handleNext, 3000);
+    timerRef.current = setInterval(handleNext, 3000);
 
-    return () => clearTimeout(intervalId);
+    return () => clearTimeout(timerRef.current);
   }, []);
 
   return (
@@ -39,7 +51,10 @@ const Carousel = ({ imageUrls, title }) => {
           className="shrink-0 focus-within:ring-0 hover:bg-transparent"
           icon={Right}
           style="text"
-          onClick={handleNext}
+          onClick={() => {
+            handleNext();
+            resetTimer();
+          }}
         />
       </div>
       <div className="mt-2 flex space-x-1">
@@ -63,7 +78,10 @@ const Carousel = ({ imageUrls, title }) => {
             <span
               className={classes}
               key={index}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => {
+                setCurrentIndex(index);
+                resetTimer();
+              }}
             />
           );
         })}
