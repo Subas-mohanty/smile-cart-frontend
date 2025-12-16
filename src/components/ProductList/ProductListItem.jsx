@@ -12,7 +12,7 @@ const ProductListItem = ({ imageUrl, name, offerPrice, slug }) => (
     <Typography className="text-center" weight="semibold">
       {name}
     </Typography>
-    <Typography>{offerPrice}</Typography>
+    <Typography>${offerPrice}</Typography>
   </Link>
 );
 

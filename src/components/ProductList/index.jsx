@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import productsApi from "apis/product";
 import { Header, PageLoader } from "components/commons/";
+import useDebounce from "hooks/useDebounce";
 import { Search } from "neetoicons";
 import { Input, NoData } from "neetoui";
 import { isEmpty } from "ramda";
@@ -13,10 +14,12 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
 
+  const debouncedValue = useDebounce(searchValue);
+
   const fetchProducts = async () => {
     try {
       const { products } = await productsApi.fetch({
-        searchTerm: searchValue,
+        searchTerm: debouncedValue,
       });
       setProducts(products);
     } catch (error) {
@@ -28,7 +31,7 @@ const ProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [searchValue]);
+  }, [debouncedValue]);
 
   if (isLoading) return <PageLoader />;
 
@@ -49,7 +52,7 @@ const ProductList = () => {
           }
         />
         {isEmpty(products) ? (
-          <NoData className="h-full w-full" title="No products to show" />
+          <NoData className="h-screen w-full" title="No products to show" />
         ) : (
           <div className="grid grid-cols-2 justify-items-center gap-y-8 p-4 md:grid-cols-3 lg:grid-cols-4">
             {products.map(product => (
