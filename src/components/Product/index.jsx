@@ -42,7 +42,15 @@ const Product = () => {
     fetchProduct();
   }, []);
 
-  const { name, imageUrl, imageUrls, description, mrp, offerPrice } = product;
+  const {
+    name,
+    imageUrl,
+    imageUrls,
+    description,
+    mrp,
+    offerPrice,
+    availableQuantity,
+  } = product;
 
   const totalDiscounts = mrp - offerPrice;
   const discountPercentage = ((totalDiscounts / mrp) * 100).toFixed(1);
@@ -75,7 +83,7 @@ const Product = () => {
           <Typography className="font-semibold text-green-600">
             {discountPercentage}% off
           </Typography>
-          <AddToCart {...{ slug }} />
+          <AddToCart {...{ slug, availableQuantity }} />
         </div>
       </div>
     </div>
