@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 
 import { VALID_COUNT_REGEX } from "components/constants/constants";
 import useSelectedQuantity from "components/hooks/useSelectedQuantity";
@@ -7,48 +7,56 @@ import { Button, Input, Toastr } from "neetoui";
 import TooltipWrapper from "./TooltipWrapper";
 
 const ProductQuantity = ({ slug, availableQuantity }) => {
-  const { selectedQuantity, setSelectedQuantity } = useSelectedQuantity(slug);
+  //   const [selectedQuantity, setSelectedQuantity] = useCartItemsStore(
+  //     paths([["cartItems", slug], ["setSelectedQuantity"]]),
+  //     shallow
+  //   );
 
-  const parsedSelectedQuantity = parseInt(selectedQuantity) || 0;
-  const isNotValidQuantity = parsedSelectedQuantity >= availableQuantity;
-  const countInputFocus = useRef(null);
+  const countInputRef = useRef();
+
+  const { selectedQuantity, setSelectedQuantity: updateSelectedQuantity } =
+    useSelectedQuantity(slug);
+
+  const parsedQuantity = parseInt(selectedQuantity) || 0;
+
+  const isNotValidQuantity = parsedQuantity >= availableQuantity;
 
   const preventNavigation = e => {
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
   };
 
-  const handleSetCount = event => {
-    const { value } = event.target;
+  const handleSetCount = e => {
+    const { value } = e.target;
     const isNotValidInputQuantity = parseInt(value) > availableQuantity;
 
     if (isNotValidInputQuantity) {
       Toastr.error(`Only ${availableQuantity} units are available`, {
         autoClose: 2000,
       });
-      countInputFocus.current.blur();
-      setSelectedQuantity(availableQuantity);
+      updateSelectedQuantity(availableQuantity);
+      countInputRef.current.blur();
     } else if (VALID_COUNT_REGEX.test(value)) {
-      setSelectedQuantity(value);
+      updateSelectedQuantity(value);
     }
   };
 
   return (
-    <div className="neeto-ui-border-black neeto-ui-rounded inline-flex flex-row items-center border">
+    <div className="inline-flex items-center rounded-md border border-black">
       <Button
         className="focus-within:ring-0"
         label="-"
         style="text"
         onClick={e => {
           preventNavigation(e);
-          setSelectedQuantity(parsedSelectedQuantity - 1);
+          updateSelectedQuantity(parsedQuantity - 1);
         }}
       />
       <Input
         nakedInput
         className="ml-2"
-        contentSize="1"
-        ref={countInputFocus}
+        contentSize="2"
+        ref={countInputRef}
         value={selectedQuantity}
         onChange={handleSetCount}
         onClick={preventNavigation}
@@ -65,7 +73,7 @@ const ProductQuantity = ({ slug, availableQuantity }) => {
           style="text"
           onClick={e => {
             preventNavigation(e);
-            setSelectedQuantity(parsedSelectedQuantity + 1);
+            updateSelectedQuantity(parsedQuantity + 1);
           }}
         />
       </TooltipWrapper>
