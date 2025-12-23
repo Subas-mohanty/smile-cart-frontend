@@ -3,10 +3,13 @@ import React, { useRef } from "react";
 import { VALID_COUNT_REGEX } from "components/constants/constants";
 import useSelectedQuantity from "components/hooks/useSelectedQuantity";
 import { Button, Input, Toastr } from "neetoui";
+import { useTranslation } from "react-i18next";
 
 import TooltipWrapper from "./TooltipWrapper";
 
 const ProductQuantity = ({ slug, availableQuantity }) => {
+  const { t } = useTranslation();
+
   //   const [selectedQuantity, setSelectedQuantity] = useCartItemsStore(
   //     paths([["cartItems", slug], ["setSelectedQuantity"]]),
   //     shallow
@@ -31,9 +34,10 @@ const ProductQuantity = ({ slug, availableQuantity }) => {
     const isNotValidInputQuantity = parseInt(value) > availableQuantity;
 
     if (isNotValidInputQuantity) {
-      Toastr.error(`Only ${availableQuantity} units are available`, {
-        autoClose: 2000,
+      const errorMessage = t("error.quantityLimit", {
+        count: availableQuantity,
       });
+      Toastr.error(errorMessage, { autoClose: 2000 });
       updateSelectedQuantity(availableQuantity);
       countInputRef.current.blur();
     } else if (VALID_COUNT_REGEX.test(value)) {
@@ -62,7 +66,7 @@ const ProductQuantity = ({ slug, availableQuantity }) => {
         onClick={preventNavigation}
       />
       <TooltipWrapper
-        content="Reached maximum units"
+        content={t("reachedMaximumUnits")}
         position="top"
         showTooltip={isNotValidQuantity}
       >
