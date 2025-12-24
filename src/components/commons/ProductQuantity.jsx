@@ -2,18 +2,23 @@ import React, { useRef } from "react";
 
 import { VALID_COUNT_REGEX } from "components/constants/constants";
 import useSelectedQuantity from "components/hooks/useSelectedQuantity";
+import { useShowProduct } from "hooks/reactQuery/useProductsApi";
 import { Button, Input, Toastr } from "neetoui";
 import { useTranslation } from "react-i18next";
 
 import TooltipWrapper from "./TooltipWrapper";
 
-const ProductQuantity = ({ slug, availableQuantity }) => {
+const ProductQuantity = ({ slug }) => {
   const { t } = useTranslation();
 
   //   const [selectedQuantity, setSelectedQuantity] = useCartItemsStore(
   //     paths([["cartItems", slug], ["setSelectedQuantity"]]),
   //     shallow
   //   );
+
+  const { data: product = {} } = useShowProduct(slug);
+
+  const { availableQuantity } = product;
 
   const countInputRef = useRef();
 

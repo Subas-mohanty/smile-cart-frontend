@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-
-import productsApi from "apis/product";
 import {
   PageNotFound,
   Header,
@@ -8,9 +5,10 @@ import {
   AddToCart,
 } from "components/commons";
 import useSelectedQuantity from "components/hooks/useSelectedQuantity";
+import { useShowProduct } from "hooks/reactQuery/useProductsApi";
 import i18n from "i18next";
 import { Button, Typography } from "neetoui";
-import { append, isNotNil } from "ramda";
+import { isNotNil } from "ramda";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import routes from "routes";
@@ -21,45 +19,18 @@ import Carousel from "./Carousel";
 const Product = () => {
   const { t } = useTranslation();
 
-  const [product, setProduct] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  // these three line is equivalent to the useShowProduct hook
+  // const [product, setProduct] = useState({});
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
 
   const { slug } = useParams(); // useParams returns an object {slug : <value of slug>}, slug is the value from the route /products/:slug, inside App.jsx
 
+  const { data: product = {}, isLoading, isError } = useShowProduct(slug);
+
   const { selectedQuantity, setSelectedQuantity } = useSelectedQuantity(slug);
 
-  const fetchProduct = async () => {
-    try {
-      const product = await productsApi.show(slug);
-      setProduct(product);
-    } catch {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // calling the fetchProduct function inside useEffect, so that the API call or the http request is made only once on the first render not on every render, this is why we have an empty dependency array in the useEffect
-
-  // fetchProduct();
-
-  // why calling the function inside useEffect instead of directly calling the function outside ?
-  // we know that every time a state variable changes the component re-render. There may be many state variables inside a component And if we call the function outside, it will be called on every re-render when any of these state variable changes, we will be making unnecessary api calls in this way. But by calling it inside useEffect with an empty dependency array we are making sure that the api call is made only once(on the initial render not on subsequent renders)
-
-  useEffect(() => {
-    fetchProduct();
-  }, []);
-
-  const {
-    name,
-    imageUrl,
-    imageUrls,
-    description,
-    mrp,
-    offerPrice,
-    availableQuantity,
-  } = product;
+  const { name, imageUrl, imageUrls, description, mrp, offerPrice } = product;
 
   const totalDiscounts = mrp - offerPrice;
   const discountPercentage = ((totalDiscounts / mrp) * 100).toFixed(1);
@@ -77,7 +48,7 @@ const Product = () => {
         <div className="w-2/5">
           <div className="flex justify-center gap-16">
             {isNotNil(imageUrls) ? (
-              <Carousel imageUrls={append(imageUrl, imageUrls)} title={name} />
+              <Carousel />
             ) : (
               <img alt={name} className="w-48" src={imageUrl} />
             )}
@@ -93,7 +64,7 @@ const Product = () => {
             {t("discountRate", { discountPercentage })}
           </Typography>
           <div className="flex space-x-10">
-            <AddToCart {...{ availableQuantity, slug }} />
+            <AddToCart {...{ slug }} />
             <Button
               className="bg-neutral-800 hover:bg-neutral-950"
               label={t("buyNow")}

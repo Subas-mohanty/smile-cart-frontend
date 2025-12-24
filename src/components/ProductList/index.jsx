@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import productsApi from "apis/product";
 import { Header, PageLoader } from "components/commons/";
+import { useFetchProducts } from "hooks/reactQuery/useProductsApi";
 import useDebounce from "hooks/useDebounce";
 import { Search } from "neetoicons";
 import { Input, NoData } from "neetoui";
@@ -13,28 +13,16 @@ import ProductListItem from "./ProductListItem";
 const ProductList = () => {
   const { t } = useTranslation();
 
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [products, setProducts] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
 
-  const debouncedValue = useDebounce(searchValue);
+  const debouncedSearchKey = useDebounce(searchValue);
 
-  const fetchProducts = async () => {
-    try {
-      const { products } = await productsApi.fetch({
-        searchTerm: debouncedValue,
-      });
-      setProducts(products);
-    } catch (error) {
-      console.log(t("error.genericError", { error }));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, [debouncedValue]);
+  const { data: { products = [] } = {}, isLoading } = useFetchProducts({
+    searchTerm: debouncedSearchKey,
+  });
+  console.log(products);
 
   if (isLoading) return <PageLoader />;
 

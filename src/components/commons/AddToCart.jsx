@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import ProductQuantity from "./ProductQuantity";
 
-const AddToCart = ({ slug, availableQuantity }) => {
+const AddToCart = ({ slug }) => {
   const { t } = useTranslation();
 
   const { selectedQuantity, setSelectedQuantity } = useSelectedQuantity(slug);
@@ -33,7 +33,7 @@ const AddToCart = ({ slug, availableQuantity }) => {
     return <Button label={t("addToCart")} size="large" onClick={handleClick} />;
   }
 
-  return <ProductQuantity {...{ slug, availableQuantity }} />;
+  return <ProductQuantity {...{ slug }} />;
 };
 
 export default AddToCart;
