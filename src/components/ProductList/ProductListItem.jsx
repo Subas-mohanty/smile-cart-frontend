@@ -3,6 +3,7 @@ import { Typography } from "neetoui";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import routes from "routes";
 import { buildUrl } from "utils/url";
+import withTitle from "utils/withTitle";
 
 const ProductListItem = ({
   imageUrl,
@@ -24,4 +25,4 @@ const ProductListItem = ({
   </Link>
 );
 
-export default ProductListItem;
+export default withTitle(ProductListItem);
