@@ -1,20 +1,27 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import { VALID_COUNT_REGEX } from "components/constants/constants";
 import useSelectedQuantity from "components/hooks/useSelectedQuantity";
 import { useShowProduct } from "hooks/reactQuery/useProductsApi";
-import { Button, Input, Toastr } from "neetoui";
-import { useTranslation } from "react-i18next";
+import { Alert, Button, Input, Toastr } from "neetoui";
+import { Trans, useTranslation } from "react-i18next";
+import useCartItemsStore from "stores/useCartItemsStore";
 
 import TooltipWrapper from "./TooltipWrapper";
 
-const ProductQuantity = ({ slug }) => {
+const ProductQuantity = ({
+  slug,
+  shouldShowDeleteAlert = false,
+  name = "",
+}) => {
   const { t } = useTranslation();
 
   //   const [selectedQuantity, setSelectedQuantity] = useCartItemsStore(
   //     paths([["cartItems", slug], ["setSelectedQuantity"]]),
   //     shallow
   //   );
+
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   const { data: product = {} } = useShowProduct(slug);
 
@@ -28,6 +35,7 @@ const ProductQuantity = ({ slug }) => {
   const parsedQuantity = parseInt(selectedQuantity) || 0;
 
   const isNotValidQuantity = parsedQuantity >= availableQuantity;
+  const removeCartItem = useCartItemsStore.pickFrom();
 
   const preventNavigation = e => {
     e.stopPropagation();
@@ -58,6 +66,12 @@ const ProductQuantity = ({ slug }) => {
         style="text"
         onClick={e => {
           preventNavigation(e);
+          if (shouldShowDeleteAlert && parsedQuantity === 1) {
+            setShowDeleteAlert(true);
+
+            return;
+          }
+
           updateSelectedQuantity(parsedQuantity - 1);
         }}
       />
@@ -86,6 +100,19 @@ const ProductQuantity = ({ slug }) => {
           }}
         />
       </TooltipWrapper>
+      <Alert
+        isOpen={showDeleteAlert}
+        submitButtonLabel={t("removeItemConfirmation.button")}
+        title={t("removeItemConfirmation.title")}
+        message={
+          <Trans i18nKey="removeItemConfirmation.message" values={{ name }} />
+        }
+        onClose={() => setShowDeleteAlert(false)}
+        onSubmit={() => {
+          removeCartItem(slug);
+          setShowDeleteAlert(false);
+        }}
+      />
     </div>
   );
 };
