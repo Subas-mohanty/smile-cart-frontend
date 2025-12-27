@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import classNames from "classnames";
 import { useShowProduct } from "hooks/reactQuery/useProductsApi";
@@ -100,4 +100,4 @@ const Carousel = () => {
   );
 };
 
-export default Carousel;
+export default memo(Carousel); // memoizing the component, so that it will not re-render if the props have not changed, if only the parent component changed it will not run

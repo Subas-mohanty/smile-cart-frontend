@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { LeftArrow } from "neetoicons";
 import { Typography } from "neetoui";
 import { keys } from "ramda";
@@ -46,4 +48,4 @@ const Header = ({ title, shouldShowBackButton = true, actionBlock }) => {
   );
 };
 
-export default Header;
+export default memo(Header); // memoizing the component, so that it will not re-render if the props have not changed, if only the parent component changed it will not run

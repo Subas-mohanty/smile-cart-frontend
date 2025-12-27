@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { AddToCart } from "components/commons";
 import { Typography } from "neetoui";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
@@ -19,4 +21,5 @@ const ProductListItem = ({ imageUrl, name, offerPrice, slug }) => (
   </Link>
 );
 
-export default withTitle(ProductListItem);
+// export default withTitle(ProductListItem);
+export default withTitle(memo(ProductListItem)); // memoizing the component, so that it will not re-render if the props have not changed, if only the parent component changed it will not run
