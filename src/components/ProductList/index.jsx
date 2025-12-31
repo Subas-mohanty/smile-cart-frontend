@@ -52,8 +52,8 @@ const ProductList = () => {
 
   const productsParams = {
     searchTerm: debouncedSearchKey,
-    page: Number(page),
-    pageSize: Number(pageSize),
+    page: Number(page) || DEFAULT_PAGE_INDEX,
+    pageSize: Number(pageSize) || DEFAULT_PAGE_SIZE,
   };
 
   const { data: { products = [], totalProductsCount } = {}, isLoading } =
